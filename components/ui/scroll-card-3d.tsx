@@ -13,7 +13,7 @@ export function ScrollCard3D({ className = "" }: ScrollCard3DProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [deltaY, setDeltaY] = useState<number>(-700);
   // Pixel scroll positions for the animation window:
-  //   scrollStart = when hero anchor is ~70% down the viewport (card in hero, just starting to scroll)
+  //   scrollStart = when bottom edge of image touches bottom edge of browser viewport
   //   scrollEnd   = when about card center lands at viewport center
   const [scrollStart, setScrollStart] = useState(0);
   const [scrollEnd, setScrollEnd] = useState(2000);
@@ -74,7 +74,7 @@ export function ScrollCard3D({ className = "" }: ScrollCard3DProps) {
   // the offset interpolates to 0 at p=1 so the About resting position is unaffected.
   const y = useTransform(smoothProgress, (p) => (deltaY - 12) * (1 - p));
 
-  // Rotation is synced to the same spring — starts from when the hero anchor is visible,
+  // Rotation is synced to the spring — starts when bottom edge of image touches viewport bottom,
   // completes exactly when the card lands in the About section.
   const rotateY = useTransform(smoothProgress, [0, 0.2, 1], [0, 0, -180]);
 
@@ -110,7 +110,7 @@ export function ScrollCard3D({ className = "" }: ScrollCard3DProps) {
           scale,
           transformStyle: "preserve-3d",
         }}
-        className="relative w-full aspect-[4/5] rounded-[32px] overflow-hidden shadow-2xl group border border-neutral-900/10 bg-neutral-950 transition-shadow duration-500 hover:shadow-[0_30px_70px_rgba(0,0,0,0.4)]"
+        className="relative w-full aspect-[4/5] rounded-[32px] overflow-hidden shadow-2xl group bg-neutral-950 transition-shadow duration-500 "
       >
         {/* --- FRONT FACE --- */}
         <div className="absolute inset-0 rounded-[32px] overflow-hidden bg-neutral-950 flex items-center justify-center">

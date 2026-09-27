@@ -52,8 +52,8 @@ export function PillButton({
 
   return (
     <MotionComponent
-      whileHover={{ scale: 1.03, y: -1 }}
-      whileTap={{ scale: 0.97 }}
+      whileHover={props.disabled ? undefined : { scale: 1.03, y: -1 }}
+      whileTap={props.disabled ? undefined : { scale: 0.97 }}
       transition={{ type: "spring", stiffness: 400, damping: 22 }}
       className={cn(baseStyles, variants[variant], sizes[size], className)}
       href={href}
