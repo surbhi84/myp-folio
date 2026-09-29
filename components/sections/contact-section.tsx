@@ -2,7 +2,7 @@
 
 import React, { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Mail, Check, ArrowUpRight, Send, AlertCircle } from "lucide-react";
+import { Mail, AlertCircle } from "lucide-react";
 import { PORTFOLIO_DATA } from "@/content/portfolio-data";
 import { PillButton } from "@/components/ui/pill-button";
 import { GithubIcon, LinkedinIcon } from "@/components/ui/icons";
@@ -90,9 +90,9 @@ export function ContactSection() {
       setTimeout(() => {
         setFormSubmitted(false);
       }, 5000);
-    } catch (err: any) {
+    } catch (err: unknown) {
       setErrorMessage(
-        err.message || "Failed to send message. Please try again.",
+        err instanceof Error ? err.message : "Failed to send message. Please try again.",
       );
     } finally {
       setIsSubmitting(false);
@@ -122,7 +122,7 @@ export function ContactSection() {
                 href={PORTFOLIO_DATA.personal.github}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-12 h-12 rounded-xl bg-neutral-200/80 hover:bg-neutral-950 hover:text-white flex items-center justify-center text-neutral-800 transition-all duration-200 shadow-sm border border-neutral-300/60"
+                className="w-12 h-12 rounded-xl bg-neutral-200/80 hover:bg-neutral-950 hover:text-white flex items-center justify-center text-neutral-800 transition-all duration-200 shadow-sm border border-neutral-300/60 cursor-pointer"
                 title="GitHub"
               >
                 <GithubIcon className="w-5 h-5" />
@@ -132,7 +132,7 @@ export function ContactSection() {
                 href={PORTFOLIO_DATA.personal.linkedin}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-12 h-12 rounded-xl bg-neutral-200/80 hover:bg-neutral-950 hover:text-white flex items-center justify-center text-neutral-800 transition-all duration-200 shadow-sm border border-neutral-300/60"
+                className="w-12 h-12 rounded-xl bg-neutral-200/80 hover:bg-neutral-950 hover:text-white flex items-center justify-center text-neutral-800 transition-all duration-200 shadow-sm border border-neutral-300/60 cursor-pointer"
                 title="LinkedIn"
               >
                 <LinkedinIcon className="w-5 h-5" />
@@ -141,7 +141,7 @@ export function ContactSection() {
 
               <a
                 href={`mailto:${PORTFOLIO_DATA.personal.email}`}
-                className="w-12 h-12 rounded-xl bg-neutral-200/80 hover:bg-neutral-950 hover:text-white flex items-center justify-center text-neutral-800 transition-all duration-200 shadow-sm border border-neutral-300/60"
+                className="w-12 h-12 rounded-xl bg-neutral-200/80 hover:bg-neutral-950 hover:text-white flex items-center justify-center text-neutral-800 transition-all duration-200 shadow-sm border border-neutral-300/60 cursor-pointer"
                 title="Email Me"
               >
                 <Mail className="w-5 h-5" />
@@ -318,7 +318,7 @@ export function ContactSection() {
 
               <a
                 href={`mailto:${PORTFOLIO_DATA.personal.email}`}
-                className="text-base font-semibold text-white hover:text-neutral-300 transition-colors inline-block"
+                className="text-base font-semibold text-white hover:text-neutral-300 transition-colors inline-block cursor-pointer"
               >
                 {PORTFOLIO_DATA.personal.email}
               </a>

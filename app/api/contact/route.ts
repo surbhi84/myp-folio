@@ -73,10 +73,12 @@ ${sanitizedMessage}
     }
 
     return NextResponse.json({ success: true, id: data?.id });
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error("Contact API handler error:", err);
+    const message =
+      err instanceof Error ? err.message : "Internal server error occurred.";
     return NextResponse.json(
-      { error: err?.message || "Internal server error occurred." },
+      { error: message },
       { status: 500 }
     );
   }

@@ -90,7 +90,7 @@ export function FloatingHeader() {
                   handleNavClick(e, "#hero");
                 }
               }}
-              className="text-lg sm:text-xl font-bold text-white hover:text-neutral-300 transition-colors pl-1 select-none"
+              className="text-lg sm:text-xl font-bold text-white hover:text-neutral-300 transition-colors pl-1 select-none cursor-pointer"
             >
               {PORTFOLIO_DATA.personal.name}
             </a>

@@ -61,10 +61,10 @@ export function AboutSection() {
               href="#contact"
               className="group inline-flex items-center gap-3 bg-transparent cursor-pointer select-none"
             >
-              <span className="text-base font-semibold text-neutral-950 tracking-tight">
+              <span className="text-xl font-semibold text-neutral-950 tracking-tight cursor-pointer">
                 Get Started
               </span>
-              <div className="relative w-8 h-8 rounded-lg border border-black overflow-hidden flex items-center justify-center bg-transparent shrink-0">
+              <div className="relative w-8 h-8 rounded-lg border border-black overflow-hidden flex items-center justify-center bg-transparent shrink-0 cursor-pointer">
                 {/* Black fill expanding from bottom-left corner */}
                 <span className="absolute inset-0 bg-black origin-bottom-left scale-0 group-hover:scale-100 transition-transform duration-300 ease-out pointer-events-none" />
 

@@ -15,27 +15,29 @@ export function ProjectsSection() {
       {/* Section Header Row (Matching Screenshot 5) */}
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-12 sm:mb-16">
         <div>
-          <span className="text-xs font-mono tracking-widest uppercase font-semibold text-neutral-500 mb-2 block">
-            SELECTED WORK (2022 – 2026)
-          </span>
           <h2 className="text-4xl sm:text-6xl font-bold text-neutral-950 font-sans">
             Featured Projects
           </h2>
         </div>
 
-        <PillButton
-          as="a"
+        <a
           href={PORTFOLIO_DATA.personal.github}
           target="_blank"
           rel="noopener noreferrer"
-          variant="outline"
-          size="md"
-          icon={<ArrowUpRight className="w-4 h-4" />}
-          iconPosition="right"
-          className="border-neutral-300 font-semibold self-start sm:self-auto"
+          className="group inline-flex items-center gap-3 bg-transparent cursor-pointer select-none self-start sm:self-auto"
         >
-          View All Work
-        </PillButton>
+          <span className="text-xl font-semibold text-neutral-950 tracking-tight cursor-pointer">
+            View All Work
+          </span>
+          <div className="relative w-8 h-8 rounded-lg border border-black overflow-hidden flex items-center justify-center bg-transparent shrink-0 cursor-pointer">
+            {/* Black fill expanding from bottom-left corner */}
+            <span className="absolute inset-0 bg-black origin-bottom-left scale-0 group-hover:scale-100 transition-transform duration-300 ease-out pointer-events-none" />
+            {/* Arrow 1 (Black): Slides out towards top-right corner on hover */}
+            <ArrowUpRight className="relative z-10 w-4 h-4 text-black transition-transform duration-300 ease-out group-hover:translate-x-6 group-hover:-translate-y-6 pointer-events-none" />
+            {/* Arrow 2 (White): Slides in from bottom-left corner to center on hover */}
+            <ArrowUpRight className="absolute z-10 w-4 h-4 text-white -translate-x-6 translate-y-6 transition-transform duration-300 ease-out group-hover:translate-x-0 group-hover:translate-y-0 pointer-events-none" />
+          </div>
+        </a>
       </div>
 
       {/* 2-Column Responsive Grid (Matching Screenshot 5) */}
@@ -88,7 +90,7 @@ export function ProjectsSection() {
                       <div className="w-3/4 h-2 rounded bg-white/20" />
                       <div className="w-1/2 h-2 rounded bg-white/10" />
                       <div className="pt-2 flex gap-2">
-                        <span className="px-2 py-1 rounded text-[10px] bg-amber-400 text-black font-semibold">Let's Collab</span>
+                        <span className="px-2 py-1 rounded text-[10px] bg-amber-400 text-black font-semibold">Let&apos;s Collab</span>
                         <span className="px-2 py-1 rounded text-[10px] bg-white/10 text-white">Ideas Crafted</span>
                       </div>
                     </div>
@@ -176,7 +178,7 @@ export function ProjectsSection() {
               {/* Close Button */}
               <button
                 onClick={() => setSelectedProject(null)}
-                className="absolute top-6 right-6 w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors"
+                className="absolute top-6 right-6 w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -220,6 +222,7 @@ export function ProjectsSection() {
                   variant="white"
                   size="md"
                   icon={<ExternalLink className="w-4 h-4" />}
+                  className="cursor-pointer"
                 >
                   Live Preview
                 </PillButton>
@@ -233,7 +236,7 @@ export function ProjectsSection() {
                     variant="outline"
                     size="md"
                     icon={<GithubIcon className="w-4 h-4" />}
-                    className="border-neutral-700 text-white hover:bg-white/10"
+                    className="border-neutral-700 text-white hover:bg-white/10 cursor-pointer"
                   >
                     View Source
                   </PillButton>

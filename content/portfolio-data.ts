@@ -61,8 +61,8 @@ export const PORTFOLIO_DATA = {
       category: "Feature-Rich Social Platform",
       description:
         "High-performance social networking web app featuring instant post creation, rich commenting, likes, optimistic UI updates, debounced fuzzy search, and lazy loading for smooth user engagement.",
-      gradient: "from-amber-600 via-orange-600 to-rose-700",
-      textColor: "text-amber-950",
+      gradient: "from-amber-200 via-orange-200 to-rose-200",
+      textColor: "text-amber-900",
       tags: ["React", "Redux Toolkit", "Tailwind CSS", "MirageJS", "Optimistic UI"],
       liveUrl: "https://github.com/surbhi84/socialMedia01",
       githubUrl: "https://github.com/surbhi84/socialMedia01",
@@ -75,8 +75,8 @@ export const PORTFOLIO_DATA = {
       category: "Enterprise Educational SaaS",
       description:
         "Production-grade educational SaaS platform feature suite. Owned frontend features end-to-end, introduced accessibility compliance standards, and integrated robust backend APIs.",
-      gradient: "from-purple-900 via-indigo-800 to-slate-900",
-      textColor: "text-purple-100",
+      gradient: "from-purple-200 via-indigo-200 to-slate-200",
+      textColor: "text-purple-900",
       tags: ["React", "TypeScript", "Accessibility (a11y)", "REST APIs", "CI/CD Pipeline"],
       liveUrl: "https://github.com/surbhi84",
       githubUrl: "https://github.com/surbhi84",
@@ -89,8 +89,8 @@ export const PORTFOLIO_DATA = {
       category: "E-Commerce Shopping Suite",
       description:
         "Modern React-based e-commerce platform with protected user routes, multi-criteria product filtering, cart & wishlist management, and debounced product discovery.",
-      gradient: "from-rose-500 via-pink-600 to-amber-500",
-      textColor: "text-rose-950",
+      gradient: "from-rose-200 via-pink-200 to-amber-200",
+      textColor: "text-rose-900",
       tags: ["React", "React Context API", "useReducer", "CSS Modules", "HalloUI"],
       liveUrl: "https://github.com/surbhi84/HalloDecor-mockbee",
       githubUrl: "https://github.com/surbhi84/HalloDecor-mockbee",
@@ -103,8 +103,8 @@ export const PORTFOLIO_DATA = {
       category: "Video Streaming & Discovery Hub",
       description:
         "Responsive video library application with playlist customization, persistent authentication, watch history tracking, queues, and predictable state management.",
-      gradient: "from-blue-600 via-sky-500 to-indigo-800",
-      textColor: "text-blue-950",
+      gradient: "from-blue-200 via-sky-200 to-indigo-200",
+      textColor: "text-blue-900",
       tags: ["React", "Context API", "Custom Hooks", "Tailwind CSS", "REST API"],
       liveUrl: "https://github.com/surbhi84/TapesVideoLibrary",
       githubUrl: "https://github.com/surbhi84/TapesVideoLibrary",

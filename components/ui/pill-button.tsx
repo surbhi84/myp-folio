@@ -17,6 +17,9 @@ interface PillButtonProps extends Omit<HTMLMotionProps<"button">, "children"> {
   rel?: string;
 }
 
+const MotionButton = motion.button;
+const MotionAnchor = motion.a;
+
 export function PillButton({
   variant = "white",
   size = "md",
@@ -48,22 +51,41 @@ export function PillButton({
     lg: "px-7 py-3.5 text-base gap-2.5",
   };
 
-  const MotionComponent = motion(Component as React.ComponentType<any>);
+  const commonProps = {
+    whileHover: props.disabled ? undefined : { scale: 1.03, y: -1 },
+    whileTap: props.disabled ? undefined : { scale: 0.97 },
+    transition: { type: "spring" as const, stiffness: 400, damping: 22 },
+    className: cn(baseStyles, variants[variant], sizes[size], className),
+  };
+
+  const innerContent = (
+    <>
+      {icon && iconPosition === "left" && <span className="inline-flex shrink-0 cursor-pointer">{icon}</span>}
+      <span className="cursor-pointer">{children}</span>
+      {icon && iconPosition === "right" && <span className="inline-flex shrink-0 transition-transform duration-200 group-hover:translate-x-0.5 cursor-pointer">{icon}</span>}
+    </>
+  );
+
+  if (Component === "a") {
+    return (
+      <MotionAnchor
+        href={href}
+        target={target}
+        rel={rel}
+        {...commonProps}
+        {...(props as unknown as HTMLMotionProps<"a">)}
+      >
+        {innerContent}
+      </MotionAnchor>
+    );
+  }
 
   return (
-    <MotionComponent
-      whileHover={props.disabled ? undefined : { scale: 1.03, y: -1 }}
-      whileTap={props.disabled ? undefined : { scale: 0.97 }}
-      transition={{ type: "spring", stiffness: 400, damping: 22 }}
-      className={cn(baseStyles, variants[variant], sizes[size], className)}
-      href={href}
-      target={target}
-      rel={rel}
+    <MotionButton
+      {...commonProps}
       {...props}
     >
-      {icon && iconPosition === "left" && <span className="inline-flex shrink-0">{icon}</span>}
-      <span>{children}</span>
-      {icon && iconPosition === "right" && <span className="inline-flex shrink-0 transition-transform duration-200 group-hover:translate-x-0.5">{icon}</span>}
-    </MotionComponent>
+      {innerContent}
+    </MotionButton>
   );
 }
