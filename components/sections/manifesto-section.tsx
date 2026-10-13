@@ -44,8 +44,7 @@ export function ManifestoSection() {
       <motion.div
         variants={containerVariants}
         initial="hidden"
-        whileInView="visible"
-        viewport={{ once: false, margin: "-80px" }}
+        animate="visible"
         className="flex flex-wrap justify-center text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-medium leading-[1.25] md:leading-[1.2]"
       >
         {fullTextWords.map((word, index) => {

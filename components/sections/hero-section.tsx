@@ -16,8 +16,8 @@ export function HeroSection() {
 
       {/* Main Center Display Typography Area */}
       <div className="relative mt-32 mb-0 flex flex-col items-center justify-center text-center">
-        {/* Titles Group: Shifted 48px downward without affecting hero-card-anchor or layout flow */}
-        <div className="relative transform translate-y-[80px]">
+        {/* Titles Group: Positioned above hero-card-anchor */}
+        <div className="relative">
           {/* Line 1: SOFTWARE */}
           <div className="relative inline-block">
             {/* Floating 3D Star Badge on Top-Left (Diagonally away) */}
@@ -61,21 +61,33 @@ export function HeroSection() {
         {/* Center Hero Anchor Space for the 3D Logo Card */}
         <div
           id="hero-card-anchor"
-          className="h-54 mx-auto w-full max-w-[192px] sm:max-w-[224px] aspect-[4/5] pointer-events-none"
+          className="h-64 mx-auto w-full max-w-[192px] sm:max-w-[224px] aspect-[4/5] pointer-events-none"
         />
       </div>
 
-      {/* Hero Footer Row (Exact match to Screenshot 2 bottom layout) */}
+      {/* Hero Footer Row */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.6, delay: 0.4 }}
         className="w-full flex items-end justify-between pt-8 text-neutral-900"
       >
-        {/* Bottom Left: ©2026 */}
-        <div className="flex flex-col">
-          <span className="text-3xl sm:text-5xl md:text-6xl font-bold font-sans">
-            ©{PORTFOLIO_DATA.personal.copyrightYear}
+        {/* Bottom Left: Availability & Location Status Badge */}
+        <div className="flex flex-col gap-1.5 pb-1">
+          <a
+            href="#contact"
+            className="group inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-neutral-900/[0.04] hover:bg-neutral-900/[0.08] border border-neutral-900/10 backdrop-blur-xs transition-all duration-200 cursor-pointer w-fit"
+          >
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+            </span>
+            <span className="text-xs font-mono font-medium tracking-wider text-neutral-900 uppercase">
+              Open to opportunities
+            </span>
+          </a>
+          <span className="text-[11px] font-mono tracking-widest uppercase text-neutral-500 pl-2">
+            Based in {PORTFOLIO_DATA.personal.location}
           </span>
         </div>
 

@@ -11,56 +11,15 @@ interface ScrollCard3DProps {
 
 export function ScrollCard3D({ className = "" }: ScrollCard3DProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [deltaY, setDeltaY] = useState<number>(-700);
-  // Pixel scroll positions for the animation window:
-  //   scrollStart = when bottom edge of image touches bottom edge of browser viewport
-  //   scrollEnd   = when about card center lands at viewport center
-  const [scrollStart, setScrollStart] = useState(0);
-  const [scrollEnd, setScrollEnd] = useState(2000);
+  const [isSticky, setIsSticky] = useState(true);
+  const scrollEndRef = useRef(1000);
 
-  // Measure layout positions and derive both deltaY and the scroll animation range
-  useEffect(() => {
-    const measure = () => {
-      const heroAnchor = document.getElementById("hero-card-anchor");
-      if (heroAnchor && containerRef.current) {
-        const vh = window.innerHeight;
-        const scrollY = window.scrollY;
-        const heroRect = heroAnchor.getBoundingClientRect();
-        const cardRect = containerRef.current.getBoundingClientRect();
-
-        const heroDocTop = heroRect.top + scrollY;
-        const cardDocTop = cardRect.top + scrollY;
-        const cardDocHeight = cardRect.height;
-
-        setDeltaY(heroDocTop - cardDocTop);
-
-        // Start: hero anchor is 70% down the viewport (card visible in hero, user just starting to scroll)
-        const start = Math.max(0, heroDocTop - vh * 0.7);
-        // End: about card center is at viewport center
-        const end = cardDocTop + cardDocHeight / 2 - vh / 2;
-
-        setScrollStart(start);
-        setScrollEnd(Math.max(start + 1, end));
-      }
-    };
-
-    measure();
-    const timer = setTimeout(measure, 100);
-    window.addEventListener("resize", measure);
-    return () => {
-      clearTimeout(timer);
-      window.removeEventListener("resize", measure);
-    };
-  }, []);
-
-  // Track raw window scroll and map to [0,1] over the measured pixel range
+  // Track raw window scroll and map to [0,1] as card travels to About section
   const { scrollY } = useScroll();
-  const scrollYProgress = useTransform(
-    scrollY,
-    [scrollStart, scrollEnd],
-    [0, 1],
-    { clamp: true },
-  );
+  const scrollYProgress = useTransform(scrollY, (value) => {
+    const end = scrollEndRef.current || 1;
+    return Math.min(1, Math.max(0, value / end));
+  });
 
   // Spring physics for smooth, physical feel
   const smoothProgress = useSpring(scrollYProgress, {
@@ -69,100 +28,147 @@ export function ScrollCard3D({ className = "" }: ScrollCard3DProps) {
     restDelta: 0.001,
   });
 
-  // Reactive translation from Hero position (deltaY) to About slot (0)
-  // Shifted downward so the card sits nicely balanced in its initial Hero position;
-  // the offset interpolates to 0 at p=1 so the About resting position is unaffected.
-  const y = useTransform(smoothProgress, (p) => (deltaY - 12) * (1 - p));
+  // Scroll-driven progressive 3D card rotation (continuous flip)
+  const rotateY = useTransform(smoothProgress, [0, 1], [0, -180]);
 
-  // Rotation is synced to the spring — starts when bottom edge of image touches viewport bottom,
-  // completes exactly when the card lands in the About section.
-  const rotateY = useTransform(smoothProgress, [0, 0.2, 1], [0, 0, -180]);
+  // Scale: smaller initial scale (~51.2%) when stuck -> Full size (1.0) settled in About
+  const scale = useTransform(smoothProgress, [0, 1], [0.512, 1.0], {
+    clamp: true,
+  });
 
-  // Scale: 20% smaller initial scale in Hero (0.512) → Full size (1.0) settled in About
-  const scale = useTransform(smoothProgress, [0, 1], [0.512, 1.0]);
-
-  // Monochrome B&W at Hero top -> Vibrant full color + Red ambient glow as it settles in About
-  const grayscale = useTransform(smoothProgress, [0, 0.85], [100, 0]);
+  // Monochrome B&W at initial stuck state -> Vibrant full color as it settles in About
+  const grayscale = useTransform(smoothProgress, [0, 0.85], [100, 0], {
+    clamp: true,
+  });
   const grayscaleFilter = useTransform(
     grayscale,
     (val) => `grayscale(${val}%) contrast(120%)`,
   );
-  const colorOpacity = useTransform(smoothProgress, [0.15, 0.85], [0, 1]);
 
-  // Glass Specular Glare translation across card face as card flips
-  const glarePos = useTransform(scrollYProgress, [0, 1], [-120, 160]);
-  const glareGradient = useTransform(
-    glarePos,
-    (pos) =>
-      `linear-gradient(${115 + pos * 0.2}deg, transparent 30%, rgba(255,255,255,0.3) 50%, transparent 70%)`,
-  );
+  useEffect(() => {
+    let rafId: number | null = null;
+
+    const checkPosition = () => {
+      const container = containerRef.current;
+      const about = document.getElementById("about");
+      if (!container || !about) return;
+
+      const vh = window.innerHeight;
+      const scrollY = window.scrollY;
+
+      // Positions relative to current viewport
+      const aboutRect = about.getBoundingClientRect();
+      const containerRect = container.getBoundingClientRect();
+
+      // Measure scroll position where card reaches its resting place in About
+      const containerDocBottom = containerRect.bottom + scrollY;
+      const targetEnd = Math.max(1, containerDocBottom - vh + 32);
+      scrollEndRef.current = targetEnd;
+
+      // Card reaches resting place in About when container's bottom edge reaches sticky bottom offset
+      const reachedAbout = aboutRect.top <= vh && containerRect.bottom <= vh - 32;
+      setIsSticky(!reachedAbout);
+    };
+
+    const handleScroll = () => {
+      if (rafId !== null) return;
+      rafId = requestAnimationFrame(() => {
+        checkPosition();
+        rafId = null;
+      });
+    };
+
+    checkPosition();
+    const timer = setTimeout(checkPosition, 100);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    window.addEventListener("resize", handleScroll);
+
+    return () => {
+      clearTimeout(timer);
+      if (rafId !== null) {
+        cancelAnimationFrame(rafId);
+      }
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", handleScroll);
+    };
+  }, []);
 
   return (
     <div
       ref={containerRef}
-      className={`relative z-30 flex items-center justify-center select-none w-full max-w-xs sm:max-w-sm ${className}`}
-      style={{ perspective: "1200px" }}
+      className={`relative z-30 flex items-center justify-center select-none w-full max-w-xs sm:max-w-sm aspect-[4/5] ${className}`}
     >
-      <motion.div
-        style={{
-          y,
-          rotateY,
-          scale,
-          transformStyle: "preserve-3d",
-        }}
-        className="relative w-full aspect-[4/5] rounded-[32px] overflow-hidden shadow-2xl group bg-neutral-950 transition-shadow duration-500 "
+      <div
+        className={
+          isSticky
+            ? "fixed bottom-8 left-1/2 -translate-x-1/2 z-30 w-[calc(100vw-3rem)] max-w-xs sm:max-w-sm aspect-[4/5]"
+            : "relative z-30 w-full h-full"
+        }
+        style={{ perspective: 1200 }}
       >
-        {/* --- FRONT FACE --- */}
-        <div className="absolute inset-0 rounded-[32px] overflow-hidden bg-neutral-950 flex items-center justify-center">
-          {/* Base Black & White Portrait Layer (Hero scroll state) */}
-          <motion.div
-            className="absolute inset-0 w-full h-full"
+        <motion.div
+          style={{
+            scale,
+            transformStyle: "preserve-3d",
+            WebkitTransformStyle: "preserve-3d",
+            rotateY,
+          }}
+          className="relative w-full h-full rounded-[32px] shadow-2xl group bg-neutral-950 transition-shadow duration-500"
+        >
+          {/* --- FRONT FACE (B&W Portrait) --- */}
+          <div
+            className="absolute inset-0 rounded-[32px] overflow-hidden bg-neutral-950 flex items-center justify-center"
             style={{
-              filter: grayscaleFilter,
+              backfaceVisibility: "hidden",
+              WebkitBackfaceVisibility: "hidden",
             }}
           >
-            <Image
-              src="/surbhi.jpg"
-              alt={`${PORTFOLIO_DATA.personal.name} Portrait`}
-              fill
-              className="object-cover object-bottom transition-transform duration-700 group-hover:scale-105"
-              sizes="(max-width: 768px) 256px, 384px"
-              priority
-            />
-          </motion.div>
+            <motion.div
+              className="absolute inset-0 w-full h-full"
+              style={{
+                filter: grayscaleFilter,
+              }}
+            >
+              <Image
+                src="/surbhi.jpg"
+                alt={`${PORTFOLIO_DATA.personal.name} Portrait`}
+                fill
+                className="object-cover object-bottom transition-transform duration-700 group-hover:scale-105"
+                sizes="(max-width: 768px) 256px, 384px"
+                priority
+              />
+            </motion.div>
+            {/* Outer Glass Border Line */}
+            <div className="absolute inset-0 border border-white/10 rounded-[32px] pointer-events-none" />
+          </div>
 
-          {/* Smooth Full-Color Overlay with Glowing Red Ambient Accent Layer (About Section state) */}
-          <motion.div
-            className="absolute inset-0 w-full h-full"
+          {/* --- BACK FACE (Color Portrait with Glowing Red Atmosphere) --- */}
+          <div
+            className="absolute inset-0 rounded-[32px] overflow-hidden bg-neutral-950 flex items-center justify-center"
             style={{
-              opacity: colorOpacity,
-              filter: "contrast(1.1) saturate(1.1)",
+              backfaceVisibility: "hidden",
+              WebkitBackfaceVisibility: "hidden",
+              transform: "rotateY(180deg)",
+              WebkitTransform: "rotateY(180deg)",
             }}
           >
-            <Image
-              src="/surbhi.jpg"
-              alt={`${PORTFOLIO_DATA.personal.name} Portrait Color`}
-              fill
-              className="object-cover object-bottom transition-transform duration-700 group-hover:scale-105"
-              sizes="(max-width: 768px) 256px, 384px"
-              priority
-            />
-            {/* Glowing Red Atmosphere Accent Layer */}
-            <div className="absolute inset-0 bg-gradient-to-t from-red-950/80 via-transparent to-red-900/30 mix-blend-color-dodge opacity-80 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
-          </motion.div>
-
-          {/* Glossy Dynamic Glass Specular Glare */}
-          <motion.div
-            className="absolute inset-0 pointer-events-none opacity-40 group-hover:opacity-70 transition-opacity duration-500"
-            style={{
-              background: glareGradient,
-            }}
-          />
-
-          {/* Outer Glass Border Line */}
-          <div className="absolute inset-0 border border-white/10 rounded-[32px] pointer-events-none" />
-        </div>
-      </motion.div>
+            <div className="absolute inset-0 w-full h-full [filter:contrast(1.1)_saturate(1.1)]">
+              <Image
+                src="/surbhi.jpg"
+                alt={`${PORTFOLIO_DATA.personal.name} Portrait Color`}
+                fill
+                className="object-cover object-bottom transition-transform duration-700 group-hover:scale-105"
+                sizes="(max-width: 768px) 256px, 384px"
+                priority
+              />
+              {/* Glowing Red Atmosphere Accent Layer */}
+              <div className="absolute inset-0 bg-gradient-to-t from-red-950/80 via-transparent to-red-900/30 mix-blend-color-dodge opacity-80 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+            </div>
+            {/* Outer Glass Border Line */}
+            <div className="absolute inset-0 border border-white/10 rounded-[32px] pointer-events-none" />
+          </div>
+        </motion.div>
+      </div>
     </div>
   );
 }
